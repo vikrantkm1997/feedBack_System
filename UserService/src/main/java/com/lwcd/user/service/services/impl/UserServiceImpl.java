@@ -3,6 +3,7 @@ package com.lwcd.user.service.services.impl;
 import com.lwcd.user.service.entities.Hotel;
 import com.lwcd.user.service.entities.Rating;
 import com.lwcd.user.service.entities.User;
+import com.lwcd.user.service.external.services.HotelService;
 import com.lwcd.user.service.repositories.UserRepository;
 import com.lwcd.user.service.services.UserService;
 import org.slf4j.Logger;
@@ -28,6 +29,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    private HotelService hotelService;
+
 //    private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -44,7 +48,7 @@ public class UserServiceImpl implements UserService {
         List <User> userList = userRepository.findAll();
         for(User user: userList)
         {
-            ArrayList<Rating> userRating = restTemplate.getForObject("http://localhost:8083/ratings/users/"+user.getUserId(), ArrayList.class);
+            ArrayList<Rating> userRating = restTemplate.getForObject("http://RATING-SERVICE/ratings/users/"+user.getUserId(), ArrayList.class);
             user.setRatings(userRating);
         }
         return userList;
@@ -53,13 +57,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUser(String userId) {
         User user = userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException("UserDoes Not exist" + userId));
-        Rating []userRating = restTemplate.getForObject("http://localhost:8083/ratings/users/"+user.getUserId(), Rating[].class);
+        Rating []userRating = restTemplate.getForObject("http://RATING-SERVICE/ratings/users/"+user.getUserId(), Rating[].class);
         List<Rating> ratings = Arrays.stream(userRating).toList();
         ArrayList<Rating> ratingList = (ArrayList<Rating>) ratings.stream().map(rating-> {
             //http://localhost:8082/hotels/4b492c47-19c8-4cc0-82a9-3e114dcabf5b -> calling this api of hotel
-            ResponseEntity<Hotel> forEntity = restTemplate.getForEntity("http://localhost:8082/hotels/" + rating.getHotelId(), Hotel.class);
-            Hotel hotel = forEntity.getBody();
-            logger.info("the status code for hotel entity is " + forEntity.getStatusCode());
+            //ResponseEntity<Hotel> forEntity = restTemplate.getForEntity("http://HOTEL-SERVICE/hotels/" + rating.getHotelId(), Hotel.class);  //this mapping with Hotel-Service was done @LoadBalance in RestTemplate in MyConfig
+            //Hotel hotel = forEntity.getBody();
+            /**Using Feign Client **/
+            Hotel hotel = hotelService.getHotel(rating.getHotelId());
+            //logger.info("the status code for hotel entity is " + forEntity.getStatusCode());
             rating.setHotel(hotel);
             return rating;
         }).collect(Collectors.toList());
