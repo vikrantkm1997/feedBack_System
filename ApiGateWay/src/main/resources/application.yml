@@ -16,7 +16,7 @@ spring:
         - id: HOTEL-SERVICE
           uri: lb://HOTEL-SERVICE
           predicates:
-            - Path=/hotels/**
+            - Path=/hotels/**  #If we want to expose more endPoints from hotel service we can add after adding comma
 
         - id: RATING-SERVICE
           uri: lb://RATING-SERVICE
