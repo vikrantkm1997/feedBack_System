@@ -16,6 +16,8 @@ spring:
   config:
     import: configserver:http://localhost:8085
 
+
+
 # fetching from config server
 #eureka:
 #  discovery:

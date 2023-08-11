@@ -19,6 +19,8 @@ spring:
   config:
     import: configserver:http://localhost:8085
 
+
+
 # fetching from config server(8085) which in turn fetching from git config
 #eureka:
 #  discovery:
