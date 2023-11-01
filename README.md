@@ -19,3 +19,6 @@ I have used **ServiceRegistry** to see all the live running services inorder to 
 For the purpose to provide abstraction to the APIs i am using **ApiGateway**, this will ensure all the requests now coming can come from ApiGateway without exposing the other services endPoints. Besides **security** it is also doing **load Balancing**.
 
 We have **configServer** as a microservice which will fetch the configs for local/dev/prod from a separate repository present in git. Whenever a service needs configs it will fetch from configServer and configServer inturn will fetch from Configs separate repository whose uri is mentioned in **application.yml** of configServer
+
+<img width="1408" alt="image" src="https://github.com/vikrantkm1997/feedBack_System/assets/52483174/9ac09f42-b571-4a7f-a32c-a81706cfd404">
+
